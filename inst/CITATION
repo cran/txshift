@@ -1,0 +1,27 @@
+citHeader("Please cite the following works when using the 'txshift' software
+           package, including both the software tool and the article describing
+           the statistical methodology.")
+
+year <- format(Sys.Date(), "%Y")
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "{txshift}: Efficient estimation of the causal effects of stochastic interventions",
+         author = c(person("Nima", "Hejazi", "S"),
+                    person("David", "Benkeser", "C")),
+         year = year,
+         note = note,
+         doi = "",
+         url = "https://github.com/nhejazi/txshift")
+
+bibentry(bibtype = "Article",
+         journal = "Biometrics (Methodology)",
+         title = "Efficient nonparametric inference on the effects of stochastic interventions under two-phase sampling, with applications to vaccine efficacy trials",
+         author = c(person("Nima", "Hejazi", "S"),
+                    person("Mark", "van der Laan", "J"),
+                    person("Holly", "Janes", "E"),
+                    person("Peter", "Gilbert", "B"),
+                    person("David", "Benkeser", "C")),
+         year = "2020",
+         doi = "",
+         url = "https://arxiv.org/abs/2003.13771")

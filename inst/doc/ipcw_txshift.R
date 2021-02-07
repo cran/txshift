@@ -26,42 +26,32 @@ C <- rbinom(n_obs, 1, plogis(W))
 delta <- 0.5
 
 ## ----ipcw_tmle_ghal_Qglm_1----------------------------------------------------
-tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y,
-                            C = C, V = c("W", "Y"),
-                            delta = delta,
-                            fluctuation = "standard",
-                            max_iter = 2,
-                            ipcw_fit_args = list(fit_type = "glm"),
-                            g_fit_args = list(fit_type = "hal",
-                                              n_bins = 5,
-                                              grid_type = "equal_mass",
-                                              lambda_seq =
-                                                exp(seq(-1, -9,
-                                                        length = 300))),
-                            Q_fit_args = list(fit_type = "glm",
-                                              glm_formula = "Y ~ ."),
-                            eif_reg_type = "glm"
-                           )
-summary(tmle_hal_shift_1)
+tmle_hal_shift_1 <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "standard", max_iter = 2,
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(fit_type = "hal",
+                        n_bins = 5,
+                        grid_type = "equal_mass",
+                        lambda_seq = exp(seq(-1, -9, length = 300))),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ ."),
+  eif_reg_type = "glm"
+)
+tmle_hal_shift_1
 
 ## ----ipcw_tmle_ghal_Qglm_2----------------------------------------------------
-tmle_hal_shift_2 <- txshift(W = W, A = A, Y = Y,
-                            C = C, V = c("W", "Y"),
-                            delta = delta,
-                            fluctuation = "weighted",
-                            max_iter = 2,
-                            ipcw_fit_args = list(fit_type = "glm"),
-                            g_fit_args = list(fit_type = "hal",
-                                              n_bins = 5,
-                                              grid_type = "equal_mass",
-                                              lambda_seq =
-                                                exp(seq(-1, -9,
-                                                        length = 300))),
-                            Q_fit_args = list(fit_type = "glm",
-                                              glm_formula = "Y ~ ."),
-                            eif_reg_type = "glm"
+tmle_hal_shift_2 <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "weighted", max_iter = 2,
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(fit_type = "hal",
+                        n_bins = 5,
+                        grid_type = "equal_mass",
+                        lambda_seq = exp(seq(-1, -9, length = 300))),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ ."),
+  eif_reg_type = "glm"
                            )
-summary(tmle_hal_shift_2)
+tmle_hal_shift_2
 
 ## ----make_sl, eval = FALSE----------------------------------------------------
 #  # SL learners to be used for most fits (e.g., IPCW, outcome regression)
@@ -82,60 +72,44 @@ summary(tmle_hal_shift_2)
 #                                    metalearner = Lrnr_solnp_density$new())
 
 ## ----ipcw_tmle_sl_1_not_run, eval=FALSE---------------------------------------
-#  tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y,
-#                             C = C, V = c("W", "Y"),
-#                             delta = delta,
-#                             fluctuation = "standard",
-#                             max_iter = 2,
-#                             ipcw_fit_args = list(fit_type = "sl",
-#                                                  sl_learnrs = sl_learner),
-#                             g_fit_args = list(fit_type = "sl",
-#                                               sl_learners_density =
-#                                                 sl_learner_density),
-#                             Q_fit_args = list(fit_type = "sl",
-#                                               sl_learners = sl_learner),
-#                             eif_reg_type = "glm"
-#                            )
-#  summary(tmle_sl_shift_1)
+#  tmle_sl_shift_1 <- txshift(
+#    W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+#    delta = delta, fluctuation = "standard", max_iter = 2,
+#    samp_fit_args = list(fit_type = "sl", sl_learnrs = sl_learner),
+#    g_exp_fit_args = list(fit_type = "sl",
+#                          sl_learners_density = sl_learner_density),
+#    Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+#    eif_reg_type = "glm"
+#  )
+#  tmle_sl_shift_1
 
 ## ----ipcw_tmle_sl_2_not_run, eval=FALSE---------------------------------------
-#  tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y,
-#                             C = C, V = c("W", "Y"),
-#                             delta = delta,
-#                             fluctuation = "weighted",
-#                             max_iter = 2,
-#                             ipcw_fit_args = list(fit_type = "sl",
-#                                                  sl_learners = sl_learner),
-#                             g_fit_args = list(fit_type = "hal",
-#                                               n_bins = 5,
-#                                               grid_type = "equal_mass",
-#                                               lambda_seq =
-#                                                 exp(seq(-1, -9,
-#                                                         length = 300))),
-#                             Q_fit_args = list(fit_type = "sl",
-#                                               sl_learners = sl_learner),
-#                             eif_reg_type = "glm"
-#                            )
-#  summary(tmle_sl_shift_2)
+#  tmle_sl_shift_2 <- txshift(
+#    W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+#    delta = delta, fluctuation = "weighted", max_iter = 2,
+#    samp_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+#    g_exp_fit_args = list(fit_type = "hal",
+#                          n_bins = 5,
+#                          grid_type = "equal_mass",
+#                          lambda_seq = exp(seq(-1, -9, length = 300))),
+#    Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+#    eif_reg_type = "glm"
+#  )
+#  tmle_sl_shift_2
 
 ## ----ipcw_tmle_ghal_sl_inefficient, eval = FALSE------------------------------
-#  tmle_sl_ineffic <- txshift(W = W, A = A, Y = Y,
-#                             C = C, V = c("W", "Y"),
-#                             delta = delta,
-#                             fluctuation = "standard",
-#                             ipcw_fit_args = list(fit_type = "sl",
-#                                                  sl_learners = sl_learner),
-#                             g_fit_args = list(fit_type = "hal",
-#                                               n_bins = 5,
-#                                               grid_type = "equal_mass",
-#                                               lambda_seq =
-#                                                 exp(seq(-1, -9,
-#                                                         length = 300))),
-#                             Q_fit_args = list(fit_type = "sl",
-#                                               sl_learners = sl_learner),
-#                             ipcw_efficiency = FALSE
-#                            )
-#  summary(tmle_sl_ineffic)
+#  tmle_sl_ineffic <- txshift(
+#    W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+#    delta = delta, fluctuation = "standard",
+#    samp_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+#    g_exp_fit_args = list(fit_type = "hal",
+#                          n_bins = 5,
+#                          grid_type = "equal_mass",
+#                          lambda_seq = exp(seq(-1, -9, length = 300))),
+#    Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner),
+#    ipcw_efficiency = FALSE
+#  )
+#  tmle_sl_ineffic
 
 ## -----------------------------------------------------------------------------
 (ci_shift <- confint(tmle_hal_shift_1))
@@ -143,8 +117,7 @@ summary(tmle_hal_shift_2)
 ## ----manual_ipcw_tmle---------------------------------------------------------
 # compute the censoring mechanism and produce IPC weights externally
 pi_mech <- plogis(W)
-ipc_weights_out <- (as.numeric(C == 1) / pi_mech)[C == 1]
-ipcw_out <- list(pi_mech = pi_mech, ipc_weights = ipc_weights_out)
+ipcw_out <- pi_mech
 
 # compute treatment mechanism (propensity score) externally
 ## first, produce the down-shifted treatment data
@@ -171,16 +144,16 @@ Qn_out <- as.data.table(cbind(Qn_noshift, Qn_upshift))[C == 1, ]
 setnames(Qn_out, c("noshift", "upshift"))
 
 # invoke the wrapper function only to apply the targeting step
-tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
-                           C = C, V = c("W", "Y"),
-                           fluctuation = "standard",
-                           max_iter = 2,
-                           ipcw_fit_args = list(fit_type = "external"),
-                           g_fit_args = list(fit_type = "external"),
-                           Q_fit_args = list(fit_type = "external"),
-                           ipcw_fit_ext = ipcw_out,
-                           gn_fit_ext = gn_out,
-                           Qn_fit_ext = Qn_out,
-                           eif_reg_type = "glm")
-summary(tmle_shift_spec)
+tmle_shift_spec <- txshift(
+  W = W, A = A, Y = Y, C_samp = C, V = c("W", "Y"),
+  delta = delta, fluctuation = "standard", max_iter = 2,
+  samp_fit_args = list(fit_type = "external"),
+  g_exp_fit_args = list(fit_type = "external"),
+  Q_fit_args = list(fit_type = "external"),
+  samp_fit_ext = ipcw_out,
+  gn_exp_fit_ext = gn_out,
+  Qn_fit_ext = Qn_out,
+  eif_reg_type = "glm"
+)
+tmle_shift_spec
 

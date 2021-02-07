@@ -23,32 +23,26 @@ Y <- A + W + rnorm(n_obs, mean = 0, sd = 1)
 delta <- 0.5
 
 ## -----------------------------------------------------------------------------
-tmle_hal_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
-                            fluctuation = "standard",
-                            g_fit_args = list(fit_type = "hal",
-                                              n_bins = 5,
-                                              grid_type = "equal_range",
-                                              lambda_seq =
-                                                exp(seq(-1, -12,
-                                                        length = 500))),
-                            Q_fit_args = list(fit_type = "glm",
-                                              glm_formula = "Y ~ .")
-                           )
-summary(tmle_hal_shift_1)
+tmle_hal_shift_1 <- txshift(
+  W = W, A = A, Y = Y, delta = delta,
+  fluctuation = "standard",
+  g_exp_fit_args = list(fit_type = "hal", n_bins = 5,
+                        grid_type = "equal_mass",
+                        lambda_seq = exp(seq(-1, -12, length = 500))),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+tmle_hal_shift_1
 
 ## -----------------------------------------------------------------------------
-tmle_hal_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
-                            fluctuation = "weighted",
-                            g_fit_args = list(fit_type = "hal",
-                                              n_bins = 5,
-                                              grid_type = "equal_range",
-                                              lambda_seq =
-                                                exp(seq(-1, -12,
-                                                        length = 500))),
-                            Q_fit_args = list(fit_type = "glm",
-                                              glm_formula = "Y ~ .")
-                           )
-summary(tmle_hal_shift_2)
+tmle_hal_shift_2 <- txshift(
+  W = W, A = A, Y = Y, delta = delta,
+  fluctuation = "weighted",
+  g_exp_fit_args = list(fit_type = "hal", n_bins = 5,
+                        grid_type = "equal_mass",
+                        lambda_seq = exp(seq(-1, -12, length = 500))),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+tmle_hal_shift_2
 
 ## ---- eval = FALSE------------------------------------------------------------
 #  # SL learners to be used for most fits (e.g., IPCW, outcome regression)
@@ -71,26 +65,24 @@ summary(tmle_hal_shift_2)
 #                                    metalearner = Lrnr_solnp_density$new())
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  tmle_sl_shift_1 <- txshift(W = W, A = A, Y = Y, delta = delta,
-#                             fluctuation = "standard",
-#                             g_fit_args = list(fit_type = "sl",
-#                                               sl_learners_density =
-#                                                 sl_learner_density),
-#                             Q_fit_args = list(fit_type = "sl",
-#                                               sl_learners = sl_learner)
-#                            )
-#  summary(tmle_sl_shift_1)
+#  tmle_sl_shift_1 <- txshift(
+#    W = W, A = A, Y = Y, delta = delta,
+#    fluctuation = "standard",
+#    g_exp_fit_args = list(fit_type = "sl",
+#                          sl_learners_density = sl_learner_density),
+#    Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner)
+#  )
+#  tmle_sl_shift_1
 
 ## ---- eval = FALSE------------------------------------------------------------
-#  tmle_sl_shift_2 <- txshift(W = W, A = A, Y = Y, delta = delta,
-#                             fluctuation = "weighted",
-#                             g_fit_args = list(fit_type = "sl",
-#                                               sl_learners_density =
-#                                                 sl_learner_density),
-#                             Q_fit_args = list(fit_type = "sl",
-#                                               sl_learners = sl_learner)
-#                            )
-#  summary(tmle_sl_shift_2)
+#  tmle_sl_shift_2 <- txshift(
+#    W = W, A = A, Y = Y, delta = delta,
+#    fluctuation = "weighted",
+#    g_exp_fit_args = list(fit_type = "sl",
+#                          sl_learners_density = sl_learner_density),
+#    Q_fit_args = list(fit_type = "sl", sl_learners = sl_learner)
+#  )
+#  tmle_sl_shift_2
 
 ## -----------------------------------------------------------------------------
 (ci_param <- confint(tmle_hal_shift_1))
@@ -123,10 +115,10 @@ setnames(Qn_out, c("noshift", "upshift"))
 # invoke the wrapper function only to apply the targeting step
 tmle_shift_spec <- txshift(W = W, A = A, Y = Y, delta = delta,
                            fluctuation = "standard",
-                           ipcw_fit_args = NULL,
-                           g_fit_args = list(fit_type = "external"),
+                           samp_fit_args = NULL,
+                           g_exp_fit_args = list(fit_type = "external"),
                            Q_fit_args = list(fit_type = "external"),
-                           gn_fit_ext = gn_out,
+                           gn_exp_fit_ext = gn_out,
                            Qn_fit_ext = Qn_out)
-summary(tmle_shift_spec)
+tmle_shift_spec
 

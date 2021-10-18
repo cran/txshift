@@ -3,15 +3,16 @@
 
 # R/`txshift`
 
-[![Travis-CI Build
-Status](https://travis-ci.com/nhejazi/txshift.svg?branch=master)](https://travis-ci.com/nhejazi/txshift)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/nhejazi/txshift?branch=master&svg=true)](https://ci.appveyor.com/project/nhejazi/txshift)
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/nhejazi/txshift/workflows/R-CMD-check/badge.svg)](https://github.com/nhejazi/txshift/actions)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/nhejazi/txshift/master.svg)](https://codecov.io/github/nhejazi/txshift?branch=master)
 [![CRAN](https://www.r-pkg.org/badges/version/txshift)](https://www.r-pkg.org/pkg/txshift)
 [![CRAN
 downloads](https://cranlogs.r-pkg.org/badges/txshift)](https://CRAN.R-project.org/package=txshift)
+[![CRAN total
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/txshift)](https://CRAN.R-project.org/package=txshift)
 [![Project Status: Active – The project has reached a stable, usable
 state and is being actively
 developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -19,6 +20,7 @@ developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.re
 license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4070042.svg)](https://doi.org/10.5281/zenodo.4070042)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02447/status.svg)](https://doi.org/10.21105/joss.02447)
+<!-- badges: end -->
 
 > Efficient Estimation of the Causal Effects of Stochastic Interventions
 
@@ -38,8 +40,9 @@ likelihood (TML) estimator of such a causal parameter, originally
 proposed by Dı́az and van der Laan (2018), and makes use of analogous
 machinery to compute an efficient one-step estimator (Pfanzagl and
 Wefelmeyer 1985). `txshift` integrates with the [`sl3`
-package](https://github.com/tlverse/sl3) (Coyle et al. 2020) to allow
-for ensemble machine learning to be leveraged in the estimation
+package](https://github.com/tlverse/sl3)
+(<span class="citeproc-not-found" data-reference-id="coyle2020sl3">**???**</span>)
+to allow for ensemble machine learning to be leveraged in the estimation
 procedure.
 
 For many practical applications (e.g., vaccine efficacy trials),
@@ -102,11 +105,13 @@ treatment, consider the following example:
 
 ``` r
 library(txshift)
-library(haldensify)
+#> txshift v0.3.6: Efficient Estimation of the Causal Effects of Stochastic
+#> Interventions
+library(sl3)
 set.seed(429153)
 
 # simulate simple data
-n_obs <- 1000
+n_obs <- 500
 W <- replicate(2, rbinom(n_obs, 1, 0.5))
 A <- rnorm(n_obs, mean = 2 * W, sd = 1)
 Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
@@ -115,72 +120,78 @@ Y <- rbinom(n_obs, 1, plogis(A + W + rnorm(n_obs, mean = 0, sd = 1)))
 C_samp <- rbinom(n_obs, 1, plogis(W + Y))
 
 # fit the full-data TMLE (ignoring two-phase sampling)
-tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                estimator = "tmle",
-                g_exp_fit_args = list(fit_type = "hal",
-                                      n_bins = 5,
-                                      grid_type = "equal_mass",
-                                      lambda_seq = exp(seq(-1, -9,
-                                                           length = 300))),
-                Q_fit_args = list(fit_type = "glm",
-                                  glm_formula = "Y ~ .")
-               )
-print(tmle)
-```
-
-``` r
+tmle <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5,
+  estimator = "tmle",
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+  ),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+tmle
+#> Counterfactual Mean of Shifted Treatment
+#> Intervention: Treatment + 0.5
+#> txshift Estimator: tmle
+#> Estimate: 0.7685
+#> Std. Error: 0.019
+#> 95% CI: [0.7292, 0.8037]
 
 # fit a full-data one-step estimator for comparison (again, no sampling)
-os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-              estimator = "onestep",
-              g_exp_fit_args = list(fit_type = "hal",
-                                    n_bins = 5,
-                                    grid_type = "equal_mass",
-                                    lambda_seq = exp(seq(-1, -9,
-                                                         length = 300))),
-              Q_fit_args = list(fit_type = "glm",
-                                glm_formula = "Y ~ .")
-             )
-print(os)
-```
-
-``` r
+os <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5,
+  estimator = "onestep",
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+  ),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+os
+#> Counterfactual Mean of Shifted Treatment
+#> Intervention: Treatment + 0.5
+#> txshift Estimator: onestep
+#> Estimate: 0.7685
+#> Std. Error: 0.019
+#> 95% CI: [0.7292, 0.8037]
 
 # fit an IPCW-TMLE to account for the two-phase sampling process
-ipcw_tmle <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                     C_samp = C_samp, V = c("W", "Y"),
-                     estimator = "tmle",
-                     max_iter = 5,
-                     samp_fit_args = list(fit_type = "glm"),
-                     g_exp_fit_args = list(fit_type = "hal",
-                                           n_bins = 5,
-                                           grid_type = "equal_mass",
-                                           lambda_seq =
-                                             exp(seq(-1, -9, length = 300))),
-                     Q_fit_args = list(fit_type = "glm",
-                                       glm_formula = "Y ~ ."),
-                     eif_reg_type = "glm"
-                    )
-print(ipcw_tmle)
-```
-
-``` r
+tmle_ipcw <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5, C_samp = C_samp, V = c("W", "Y"),
+  estimator = "tmle", max_iter = 5, eif_reg_type = "glm",
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+  ),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+tmle_ipcw
+#> Counterfactual Mean of Shifted Treatment
+#> Intervention: Treatment + 0.5
+#> txshift Estimator: tmle
+#> Estimate: 0.7603
+#> Std. Error: 0.0204
+#> 95% CI: [0.718, 0.798]
 
 # compare with an IPCW-agumented one-step estimator under two-phase sampling
-ipcw_os <- txshift(W = W, A = A, Y = Y, delta = 0.5,
-                   C_samp = C_samp, V = c("W", "Y"),
-                   estimator = "onestep",
-                   samp_fit_args = list(fit_type = "glm"),
-                   g_exp_fit_args = list(fit_type = "hal",
-                                         n_bins = 5,
-                                         grid_type = "equal_mass",
-                                         lambda_seq =
-                                           exp(seq(-1, -9, length = 300))),
-                   Q_fit_args = list(fit_type = "glm",
-                                     glm_formula = "Y ~ ."),
-                   eif_reg_type = "glm"
-                  )
-print(ipcw_os)
+os_ipcw <- txshift(
+  W = W, A = A, Y = Y, delta = 0.5, C_samp = C_samp, V = c("W", "Y"),
+  estimator = "onestep", eif_reg_type = "glm",
+  samp_fit_args = list(fit_type = "glm"),
+  g_exp_fit_args = list(
+    fit_type = "sl",
+    sl_learners_density = Lrnr_density_hse$new(Lrnr_hal9001$new())
+  ),
+  Q_fit_args = list(fit_type = "glm", glm_formula = "Y ~ .")
+)
+os_ipcw
+#> Counterfactual Mean of Shifted Treatment
+#> Intervention: Treatment + 0.5
+#> txshift Estimator: onestep
+#> Estimate: 0.7601
+#> Std. Error: 0.0204
+#> 95% CI: [0.7178, 0.7979]
 ```
 
 -----
@@ -227,7 +238,7 @@ After using the `txshift` R package, please cite the following:
         stochastic interventions in {R}},
       year  = {2020},
       doi = {10.21105/joss.02447},
-      url = {https://10.21105.joss.02447},
+      url = {https://doi.org/10.21105/joss.02447},
       journal = {Journal of Open Source Software},
       publisher = {The Open Journal}
     }
@@ -265,18 +276,22 @@ After using the `txshift` R package, please cite the following:
   - [R/`haldensify`](https://github.com/nhejazi/haldensify) - A minimal
     package for estimating the conditional density treatment mechanism
     component of this parameter based on using the [highly adaptive
-    lasso](https://github.com/tlverse/hal9001) (Coyle, Hejazi, and van
-    der Laan 2020; Hejazi, Coyle, and van der Laan 2020) in combination
-    with a pooled hazard regression. This package implements a variant
-    of the approach advocated by Dı́az and van der Laan (2011).
+    lasso](https://github.com/tlverse/hal9001)
+    (<span class="citeproc-not-found" data-reference-id="coyle2020hal9001-rpkg">**???**</span>;
+    Hejazi, Coyle, and van der Laan 2020) in combination with a pooled
+    hazard regression. This package implements a variant of the approach
+    advocated by Dı́az and van der Laan (2011).
 
 -----
 
 ## Funding
 
-The development of this software was supported in part through a grant
-from the National Institutes of Health: [T32
-LM012417-02](https://projectreporter.nih.gov/project_info_description.cfm?aid=9248418&icde=37849831&ddparam=&ddvalue=&ddsub=&cr=1&csb=default&cs=ASC&pball=).
+The development of this software was supported in part through grants
+from the National Library of Medicine (award number [T32
+LM012417](https://reporter.nih.gov/project-details/9248418)) and the
+National Institute of Allergy and Infectious Diseases (award number [R01
+AI074345](https://reporter.nih.gov/project-details/9926564)) of the
+National Institutess of Health.
 
 -----
 
@@ -314,24 +329,6 @@ See below for details:
 ## References
 
 <div id="refs" class="references">
-
-<div id="ref-coyle2020sl3">
-
-Coyle, Jeremy R, Nima S Hejazi, Ivana Malenica, and Oleg Sofrygin. 2020.
-*sl3: Modern Pipelines for Machine Learning and Super Learning*.
-<https://github.com/tlverse/sl3>.
-<https://doi.org/10.5281/zenodo.1342293>.
-
-</div>
-
-<div id="ref-coyle2020hal9001-rpkg">
-
-Coyle, Jeremy R, Nima S Hejazi, and Mark J van der Laan. 2020. *hal9001:
-The Scalable Highly Adaptive Lasso*.
-<https://github.com/tlverse/hal9001>.
-<https://doi.org/10.5281/zenodo.3558313>.
-
-</div>
 
 <div id="ref-diaz2020causal">
 

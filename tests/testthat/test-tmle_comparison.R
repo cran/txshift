@@ -1,6 +1,5 @@
 context("Implementations of TML estimator variants agree")
 library(data.table)
-library(rlang)
 set.seed(172943)
 
 # Example based on the data-generating mechanism presented in the simulation
@@ -46,14 +45,16 @@ gn_ext_fitted <- as.data.table(
       gn_out <- gn.0(A = A + shift_value, W = W)
     }
   )
-) %>% set_names(c("downshift", "noshift", "upshift", "upupshift"))
+)
+setnames(gn_ext_fitted, c("downshift", "noshift", "upshift", "upupshift"))
 
 # NOTE: should also use true Q for good measure (truth includes interactions)
 Qn_ext_fitted <- as.data.table(
   lapply(c(0, delta_shift), function(shift_value) {
     Qn_out <- Qn.0(A = A + shift_value, W = W)
   })
-) %>% set_names(c("noshift", "upshift"))
+)
+setnames(Qn_ext_fitted, c("noshift", "upshift"))
 
 # fit TMLE
 tmle_txshift_std <- txshift(
@@ -153,5 +154,5 @@ psi_ipcw_tmle_hal_wts <- as.numeric(ipcw_tmle_hal_wts$psi)
 
 # test for reasonable equality between estimators
 test_that("IPCW-TMLEs w/ EIF-HAL match for weighted v. standard fluctuation", {
-  expect_equal(psi_ipcw_tmle_hal_std, psi_ipcw_tmle_hal_wts, tol = 1e-3)
+  expect_equal(psi_ipcw_tmle_hal_std, psi_ipcw_tmle_hal_wts, tol = 5e-3)
 })

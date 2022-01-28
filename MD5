@@ -1,5 +1,5 @@
-3d7b5b90665ead62cbbe8795cd4c175d *DESCRIPTION
-7418c7ef02dbb46a820a023dfb7518fc *LICENSE
+286addb71ec2773bdcff7fae31fa123b *DESCRIPTION
+630055b3b80da5c55d2541f505c92b3d *LICENSE
 b87edfd3b3899764baf4aa26a2ff25a9 *NAMESPACE
 25552b7eb2d591ff8e15461650d15a4f *NEWS.md
 824348b62a044e4a5f63fe53242329fa *R/bound.R
@@ -14,13 +14,13 @@ e6d50f9b7a37dde6903b95f6734a4c58 *R/tmle_txshift.R
 259f3e765104abde5d8016debc74e6e5 *R/txshift.R
 71b960b3d64e3cba2d3585e3754bf63b *R/utils.R
 bc7a2b69100aca988c0331488a4737bd *R/zzz.R
-cd6d30fce7ffa7a449e5a5528ce866eb *README.md
-fd3a13956c93e401e6173d1e6c37c48c *build/vignette.rds
+8bd3e2b675faefda9e53507caaf5c9dc *README.md
+665955a1986736068e5e7242ca695796 *build/vignette.rds
 f01c09a175bfe02b7ac2d65ea565e9ab *inst/CITATION
-db2c51b3c4c2d9de13c6b6936484ead7 *inst/REFERENCES.bib
+7722356174f071fcfb62928d64e3101c *inst/REFERENCES.bib
 e550842d3923dafd53afb3db7f6dfc77 *inst/doc/intro_txshift.R
-c4b1597384ffc344669cb5c1e06fa54c *inst/doc/intro_txshift.Rmd
-48dd17b4d72f220f1acfadc25809021e *inst/doc/intro_txshift.html
+4eafa46e83089d1ba0069a4d17adb4ad *inst/doc/intro_txshift.Rmd
+05ddcfdb6ed097df449a4983b3d30c0a *inst/doc/intro_txshift.html
 6356ad96156473f3f1e709963609b49a *man/bound_precision.Rd
 9317836ffb9913c741dbcfef287787a1 *man/bound_propensity.Rd
 8c4f5b891aa8f3ea1bcc8d0d8b57376d *man/confint.txshift.Rd
@@ -50,4 +50,4 @@ b08bc24da7f6a3021623e44884e32f0e *tests/testthat/test-msm_vim.R
 371b9af89871e41633581d336125fef1 *tests/testthat/test-nuisance_est.R
 88955e3bec9247e98ca1f80f3f71fe08 *tests/testthat/test-shift_mechanism_additive.R
 987e00471d8a8ef1ab6038d5304064f9 *tests/testthat/test-tmle_comparison.R
-c4b1597384ffc344669cb5c1e06fa54c *vignettes/intro_txshift.Rmd
+4eafa46e83089d1ba0069a4d17adb4ad *vignettes/intro_txshift.Rmd

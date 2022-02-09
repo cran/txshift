@@ -1,4 +1,4 @@
-286addb71ec2773bdcff7fae31fa123b *DESCRIPTION
+fa31ccb32427054f9f66019f8249e68b *DESCRIPTION
 630055b3b80da5c55d2541f505c92b3d *LICENSE
 b87edfd3b3899764baf4aa26a2ff25a9 *NAMESPACE
 25552b7eb2d591ff8e15461650d15a4f *NEWS.md
@@ -14,13 +14,13 @@ e6d50f9b7a37dde6903b95f6734a4c58 *R/tmle_txshift.R
 259f3e765104abde5d8016debc74e6e5 *R/txshift.R
 71b960b3d64e3cba2d3585e3754bf63b *R/utils.R
 bc7a2b69100aca988c0331488a4737bd *R/zzz.R
-8bd3e2b675faefda9e53507caaf5c9dc *README.md
+5150a6a4850012b0dfbb5e9f88ed9600 *README.md
 665955a1986736068e5e7242ca695796 *build/vignette.rds
-f01c09a175bfe02b7ac2d65ea565e9ab *inst/CITATION
+06f309f882b4651394ddae2b17497393 *inst/CITATION
 7722356174f071fcfb62928d64e3101c *inst/REFERENCES.bib
 e550842d3923dafd53afb3db7f6dfc77 *inst/doc/intro_txshift.R
 4eafa46e83089d1ba0069a4d17adb4ad *inst/doc/intro_txshift.Rmd
-05ddcfdb6ed097df449a4983b3d30c0a *inst/doc/intro_txshift.html
+ff2652f3ad4cb3abed04e60828ec8949 *inst/doc/intro_txshift.html
 6356ad96156473f3f1e709963609b49a *man/bound_precision.Rd
 9317836ffb9913c741dbcfef287787a1 *man/bound_propensity.Rd
 8c4f5b891aa8f3ea1bcc8d0d8b57376d *man/confint.txshift.Rd
